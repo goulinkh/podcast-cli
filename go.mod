@@ -4,5 +4,6 @@ go 1.14
 
 require (
 	github.com/PuerkitoBio/goquery v1.5.1
-	github.com/go-resty/resty/v2 v2.2.0
+	github.com/faiface/beep v1.0.2
+	github.com/hajimehoshi/go-mp3 v0.1.1
 )

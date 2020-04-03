@@ -3,11 +3,20 @@ package main
 import (
 	"fmt"
 
+	audioplayer "github.com/goulinkh/podcast-cli/audio-player"
 	"github.com/goulinkh/podcast-cli/podcasts"
 )
 
+var (
+	cacheFolder = ".cache/"
+)
+
 func main() {
-	podcast := podcasts.GetTop50Podcats()[0]
-	episodes := podcast.GetEpisodes(0, 20)
-	fmt.Println(episodes)
+	podcast := podcasts.GetTop50Podcats()[2]
+	latestEpisode := podcast.GetEpisodes(0, 1)[0]
+	go func() {
+		audioURL, _ := latestEpisode.AudioURL()
+		fmt.Println(audioplayer.PlaySound(latestEpisode.Title, cacheFolder, audioURL))
+	}()
+	select {}
 }
