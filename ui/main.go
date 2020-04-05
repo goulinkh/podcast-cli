@@ -42,7 +42,7 @@ func initHelpBar() {
 		"[ p, Space ](fg:black)[Play/Pause](fg:black,bg:green) " +
 		"[Esc ](fg:black)[Back](fg:black,bg:green) " +
 		"[Right ](fg:black)[+10s](fg:black,bg:green) " +
-		"[Left ](fg:black)[:10s](fg:black,bg:green) " +
+		"[Left ](fg:black)[-10s](fg:black,bg:green) " +
 		"[ q ](fg:black)[Exit](fg:black,bg:green)" +
 		"[ s ](fg:black)[SEARCH](fg:black,bg:green)"
 
