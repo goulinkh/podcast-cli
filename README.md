@@ -44,6 +44,8 @@ sudo chmod +x /usr/local/bin/podcast-cli
 | `Left`     | -10s   |
 | `q`        | Exit   |
 | `s`        | SEARCH |
+
+
 **Issues**
 
 * Unable to get audio length of a remote content, I have to download the audio file before playing it
