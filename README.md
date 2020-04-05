@@ -1,5 +1,8 @@
 <p align="center"><img width="200px" src="/ressources/img/logo.png" alt="podcast-cli"/></p>
-#
+
+
+___
+
 Top-like interface for listening podcasts
 `podcast-cli` lets you play your podcasts from the terminal:
 <p align="center"><img src="/ressources/img/demo.gif" alt="podcast-cli"/></p>
@@ -46,6 +49,7 @@ sudo chmod +x /usr/local/bin/podcast-cli
 | `s`        | SEARCH |
 
 
-**Issues**
+## Issues
 
 * Unable to get audio length of a remote content, I have to download the audio file before playing it
+* Bad Podcasts API, I have to make a free access API or find a better one
