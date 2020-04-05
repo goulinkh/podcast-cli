@@ -9,6 +9,20 @@ Top-like interface for listening podcasts
 ## Install
 Fetch the [latest release](https://github.com/goulinkh/podcast-cli/releases)
 
+#### Linux
+
+```bash
+sudo wget https://github.com/goulinkh/podcast-cli/releases/download/v0.1.1/podcast-cli-0.1.1-linux-amd64 -O /usr/local/bin/podcast-cli
+sudo chmod +x /usr/local/bin/podcast-cli
+```
+
+#### OS X
+
+```bash
+sudo curl -Lo /usr/local/bin/podcast-cli https://github.com/goulinkh/podcast-cli/releases/download/v0.1.1/podcast-cli-0.1.1-darwin-amd64
+sudo chmod +x /usr/local/bin/podcast-cli
+```
+
 ## Usage
 `podcast-cli` requires no arguments and uses your default internet settings to access the internet.
 
