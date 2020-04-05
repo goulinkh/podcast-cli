@@ -123,6 +123,7 @@ func Show() {
 								if err != nil {
 									audioDurationWidget.Title = "Unsupported audio content"
 								}
+								frameUpdate()
 							}()
 						}
 					}

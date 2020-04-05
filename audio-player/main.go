@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"strings"
@@ -32,13 +33,6 @@ func init() {
 	Volume = &effects.Volume{Base: 2}
 }
 func downloadContent(URL string, filename string, directory string) (string, error) {
-	filename = path.Clean(strings.ReplaceAll(filename, ":", ""))
-	filePath := path.Join(directory, filename)
-	_, err := os.Open(filePath)
-	// download content if not is .cache
-	if err == nil {
-		return filePath, nil
-	}
 	response, err := http.Get(URL)
 	if err != nil {
 		return "", err
@@ -47,12 +41,18 @@ func downloadContent(URL string, filename string, directory string) (string, err
 	if err != nil {
 		return "", err
 	}
-	os.MkdirAll(directory, os.ModeAppend)
-	err = ioutil.WriteFile(filePath, audio, os.ModeAppend)
+	filename = url.PathEscape(path.Clean(strings.ReplaceAll(filename, ":", "")))
+	os.MkdirAll(directory, 0755)
+	tmpFile, err := ioutil.TempFile(directory, filename)
 	if err != nil {
 		return "", err
 	}
-	return filePath, nil
+	// download content if not is .cache
+	err = ioutil.WriteFile(tmpFile.Name(), audio, 0755)
+	if err != nil {
+		return "", err
+	}
+	return tmpFile.Name(), nil
 }
 
 // PlaySound play the given audio url, supported Formats: mp3, wav
