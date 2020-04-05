@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -11,9 +13,25 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+type Episode struct {
+	URL         string    `json:"url"`
+	Title       string    `json:"title"`
+	Podcast     *Podcast  `json:"podcast"`
+	Description string    `json:"description"`
+	audioURL    string    `json:"audio-url"`
+	ReleaseDate time.Time `json:"release-date"`
+}
+
+func (e *Episode) String() string {
+	return fmt.Sprintf("title : %s, url: %s\n", e.Title, e.URL)
+}
+
 const episodesPerPage = 20
 
-func (podcast *Podcast) GetEpisodes(index int, count int) []*Episode {
+func (podcast *Podcast) Episodes(index int, count int) []*Episode {
+	if podcast.episodes != nil && podcast.episodeIndex == index && podcast.episodesCount == count {
+		return podcast.episodes
+	}
 	startPage := index/episodesPerPage + 1
 	pagesToFetch := int(math.Ceil(float64(count+index%episodesPerPage) / episodesPerPage))
 
@@ -32,12 +50,17 @@ func (podcast *Podcast) GetEpisodes(index int, count int) []*Episode {
 		}(i)
 	}
 	wg.Wait()
+	podcast.episodeIndex = index
+	podcast.episodesCount = count
 	// TODO: sort by release date
 	if len(episodes) < count {
-		return episodes
+		sort.Sort(ByDate(episodes))
+		podcast.episodes = episodes
+	} else {
+		sort.Sort(ByDate(episodes[:count]))
+		podcast.episodes = episodes[:count]
 	}
-
-	return episodes[:count]
+	return podcast.episodes
 }
 
 func (podcast *Podcast) scrapEpisodesByPodcast(URL string) ([]*Episode, error) {
@@ -104,3 +127,23 @@ func parseReleaseDate(date string) (releaseDate time.Time) {
 	}
 	return releaseDate
 }
+
+func SearchEpisode(episodes []*Episode, query string) []*Episode {
+	episodesMatched := make([]*Episode, 0)
+	queryRegex := fmt.Sprintf(`(?i)%s`, query)
+	for _, episode := range episodes {
+		tb, _ := regexp.Match(queryRegex, []byte(episode.Title))
+		db, _ := regexp.Match(queryRegex, []byte(episode.Description))
+		if tb || db {
+			episodesMatched = append(episodesMatched, episode)
+		}
+	}
+	sort.Sort(ByDate(episodesMatched))
+	return episodesMatched
+}
+
+type ByDate []*Episode
+
+func (a ByDate) Len() int           { return len(a) }
+func (a ByDate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByDate) Less(i, j int) bool { return a[i].ReleaseDate.After(a[j].ReleaseDate) }

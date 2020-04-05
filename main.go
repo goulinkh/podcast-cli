@@ -2,21 +2,26 @@ package main
 
 import (
 	"fmt"
+	"os"
 
-	audioplayer "github.com/goulinkh/podcast-cli/audio-player"
+	"github.com/akamensky/argparse"
 	"github.com/goulinkh/podcast-cli/podcasts"
-)
-
-var (
-	cacheFolder = ".cache/"
+	"github.com/goulinkh/podcast-cli/ui"
 )
 
 func main() {
-	podcast := podcasts.GetTop50Podcats()[2]
-	latestEpisode := podcast.GetEpisodes(0, 1)[0]
-	go func() {
-		audioURL, _ := latestEpisode.AudioURL()
-		fmt.Println(audioplayer.PlaySound(latestEpisode.Title, cacheFolder, audioURL))
-	}()
-	select {}
+	parser := argparse.NewParser("podcast-cli", "CLI podcast player")
+	podcastSearchQuery := parser.String("s", "search", &argparse.Options{Required: false, Help: "your podcast's name"})
+	err := parser.Parse(os.Args)
+	if err != nil {
+		fmt.Print(parser.Usage(err))
+	}
+	var podcastsList []*podcasts.Podcast
+	if podcastSearchQuery == nil || *podcastSearchQuery == "" {
+		podcastsList = podcasts.GetTop50Podcats()
+	} else {
+		podcastsList = podcasts.FindPodcasts(*podcastSearchQuery)
+	}
+	ui.NewUI(podcastsList)
+	ui.Show()
 }

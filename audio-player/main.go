@@ -2,7 +2,6 @@ package audioplayer
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -23,18 +22,18 @@ type AudioPlayer struct {
 }
 
 var (
-	mainCtrl *beep.Ctrl
-	volume   *effects.Volume
-	streamer beep.StreamSeekCloser
-	format   beep.Format
+	MainCtrl *beep.Ctrl
+	Volume   *effects.Volume
+	Streamer beep.StreamSeekCloser
+	Format   beep.Format
 )
 
 func init() {
-	volume = &effects.Volume{Base: 2}
+	Volume = &effects.Volume{Base: 2}
 }
 func downloadContent(URL string, filename string, directory string) (string, error) {
 	filename = path.Clean(strings.ReplaceAll(filename, ":", ""))
-	filePath := directory + filename
+	filePath := path.Join(directory, filename)
 	_, err := os.Open(filePath)
 	// download content if not is .cache
 	if err == nil {
@@ -48,8 +47,7 @@ func downloadContent(URL string, filename string, directory string) (string, err
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("downloaded file")
-	os.MkdirAll(".cache", os.ModeAppend)
+	os.MkdirAll(directory, os.ModeAppend)
 	err = ioutil.WriteFile(filePath, audio, os.ModeAppend)
 	if err != nil {
 		return "", err
@@ -57,52 +55,57 @@ func downloadContent(URL string, filename string, directory string) (string, err
 	return filePath, nil
 }
 
-// PlaySound play the given audio url, supported formats: mp3, wav
+// PlaySound play the given audio url, supported Formats: mp3, wav
 func PlaySound(filename, directory, URL string) (int, error) {
-	if streamer != nil {
-		streamer.Close()
+	if Streamer != nil {
+		Streamer.Close()
 	}
 	audioFile, err := downloadContent(URL, filename, directory)
 	if err != nil {
 		return 0, err
 	}
-	fmt.Println(audioFile)
 	file, err := os.Open(audioFile)
-	streamer, format, err = mp3.Decode(file)
+	Streamer, Format, err = mp3.Decode(file)
 	if err != nil {
-		streamer, format, err = wav.Decode(file)
+		Streamer, Format, err = wav.Decode(file)
 	}
 	if err != nil {
 		return 0, errors.New("Unsupported audio format")
 	}
-	sr := format.SampleRate * 2
+	sr := Format.SampleRate * 2
 	speaker.Init(sr, sr.N(time.Second/10))
 
-	volume.Streamer = beep.Resample(4, format.SampleRate, sr, streamer)
-	mainCtrl = &beep.Ctrl{Streamer: volume}
-	speaker.Play(mainCtrl)
+	Volume.Streamer = beep.Resample(4, Format.SampleRate, sr, Streamer)
+	MainCtrl = &beep.Ctrl{Streamer: Volume}
+	speaker.Play(MainCtrl)
 
-	return int(float32(streamer.Len()) / float32(format.SampleRate)), nil
+	return int(float32(Streamer.Len()) / float32(Format.SampleRate)), nil
 }
 
 func PauseSong(state bool) {
 	speaker.Lock()
-	mainCtrl.Paused = state
+	MainCtrl.Paused = state
 	speaker.Unlock()
 }
 
 func Seek(pos int) error {
-	speaker.Lock()
-	err := streamer.Seek(pos * int(format.SampleRate))
-	speaker.Unlock()
-	return err
+	if MainCtrl != nil {
+		speaker.Lock()
+		err := Streamer.Seek(Format.SampleRate.N(time.Second) * pos)
+		speaker.Unlock()
+		return err
+	}
+	return nil
 }
 
 func SetVolume(percent int) {
 	if percent == 0 {
-		volume.Silent = true
+		Volume.Silent = true
 	} else {
-		volume.Silent = false
-		volume.Volume = -float64(100-percent) / 100.0 * 5
+		Volume.Silent = false
+		Volume.Volume = -float64(100-percent) / 100.0 * 5
 	}
+}
+func Position() int {
+	return int(Format.SampleRate.D(Streamer.Position()).Round(time.Second).Seconds())
 }
