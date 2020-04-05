@@ -4,7 +4,7 @@ Top-like interface for listening podcasts
 `podcast-cli` lets you play your podcasts from the terminal:
 <p align="center"><img src="/ressources/img/demo.gif" alt="podcast-cli"/></p>
 
-`podcast-cli` is built entirely with Go, you can run it on `Linux` and `Windows`.
+`podcast-cli` is built entirely with Go, you can run it on `Linux`, `Mac OS` and `Windows`.
 
 ## Install
 Fetch the [latest release](https://github.com/goulinkh/podcast-cli/releases)
@@ -33,4 +33,3 @@ Fetch the [latest release](https://github.com/goulinkh/podcast-cli/releases)
 **Issues**
 
 * Unable to get audio length of a remote content, I have to download the audio file before playing it
-* No Mac OS support due to a problem with the audio player

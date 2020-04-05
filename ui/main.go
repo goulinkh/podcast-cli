@@ -87,7 +87,7 @@ func Show() {
 	uiEvents := ui.PollEvents()
 	for {
 		select {
-		case <-time.After(time.Microsecond * 500):
+		case <-time.After(time.Microsecond * 700):
 			if audioplayer.MainCtrl != nil {
 				if audioplayer.MainCtrl.Paused == false {
 					position := audioplayer.Position()
@@ -96,8 +96,10 @@ func Show() {
 					if audioDuration > 0 {
 						audioDurationWidget.Percent = (position * 100) / audioDuration
 					}
+					rerender()
 				} else if audioplayer.MainCtrl.Paused == true {
 					audioDurationWidget.Title = "Stopped"
+					rerender()
 				}
 			}
 		case e := <-uiEvents:
@@ -123,7 +125,7 @@ func Show() {
 								if err != nil {
 									audioDurationWidget.Title = "Unsupported audio content"
 								}
-								frameUpdate()
+								rerender()
 							}()
 						}
 					}
@@ -187,12 +189,16 @@ func Show() {
 				currentListWidget = podcastsListWidget
 				currentDetailsWidget = podcastDetailsWidget
 				updateDetailsWidget()
+				frameUpdate()
 			}
-			frameUpdate()
+			rerender()
 		}
 	}
 }
-
+func rerender() {
+	ui.Clear()
+	ui.Render(grid, helpBarWidget)
+}
 func frameUpdate() {
 	initGrid()
 }
