@@ -3,11 +3,11 @@
 
 ___
 
-Top-like interface for listening podcasts
+Top-like interface for listening to podcasts
 `podcast-cli` lets you play your podcasts from the terminal:
 <p align="center"><img src="/ressources/img/demo.gif" alt="podcast-cli"/></p>
 
-`podcast-cli` is built entirely with Go, you can run it on `Linux`, `Mac OS` and `Windows`.
+`podcast-cli` is entirely built with Go, you can run it on `Linux`, `Mac OS` and `Windows`.
 
 ## Install
 Fetch the [latest release](https://github.com/goulinkh/podcast-cli/releases)
