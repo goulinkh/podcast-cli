@@ -182,13 +182,13 @@ func Show() {
 			case "<C-b>":
 				currentListWidget.ScrollPageUp()
 				updateDetailsWidget()
-			case "<Escape>", "<C-<Backspace>>":
+			case "<Escape>", "<C-<Backspace>>", "<Backspace>":
 				currentListWidget = podcastsListWidget
 				currentDetailsWidget = podcastDetailsWidget
 				updateDetailsWidget()
 			}
+			frameUpdate()
 		}
-		frameUpdate()
 	}
 }
 
