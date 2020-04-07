@@ -2,9 +2,9 @@ package podcasts
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -29,35 +29,41 @@ func (p *Podcast) String() string {
 	return string(res)
 }
 
-func GetTop50Podcats() (podcasts []*Podcast) {
+func GetTop50Podcats() (podcasts []*Podcast, err error) {
 	response, err := http.Get("https://gpodder.net/toplist/50.json")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	json.Unmarshal(responseData, &podcasts)
-	return podcasts
+	err = json.Unmarshal(responseData, &podcasts)
+	if err != nil {
+		return nil, err
+	}
+	return podcasts, nil
 }
 
-func FindPodcasts(query string) (podcasts []*Podcast) {
+func FindPodcasts(query string) (podcasts []*Podcast, err error) {
 	URL := fmt.Sprintf("https://gpodder.net/search.json?q=%s", url.QueryEscape(query))
 	response, err := http.Get(URL)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
 	if response.StatusCode != 200 {
-		log.Fatal(responseData)
+		return nil, errors.New("404: Not found")
 	}
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	json.Unmarshal(responseData, &podcasts)
-	return podcasts
+	err = json.Unmarshal(responseData, &podcasts)
+	if err != nil {
+		return nil, err
+	}
+	return podcasts, nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/akamensky/argparse"
@@ -18,9 +19,12 @@ func main() {
 	}
 	var podcastsList []*podcasts.Podcast
 	if podcastSearchQuery == nil || *podcastSearchQuery == "" {
-		podcastsList = podcasts.GetTop50Podcats()
+		podcastsList, err = podcasts.GetTop50Podcats()
 	} else {
-		podcastsList = podcasts.FindPodcasts(*podcastSearchQuery)
+		podcastsList, err = podcasts.FindPodcasts(*podcastSearchQuery)
+	}
+	if err != nil {
+		log.Fatal(err)
 	}
 	ui.NewUI(podcastsList)
 	ui.Show()

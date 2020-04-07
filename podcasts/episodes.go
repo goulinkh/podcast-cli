@@ -14,11 +14,11 @@ import (
 )
 
 type Episode struct {
-	URL         string    `json:"url"`
-	Title       string    `json:"title"`
-	Podcast     *Podcast  `json:"podcast"`
-	Description string    `json:"description"`
-	audioURL    string    `json:"audio-url"`
+	URL         string   `json:"url"`
+	Title       string   `json:"title"`
+	Podcast     *Podcast `json:"podcast"`
+	Description string   `json:"description"`
+	audioURL    string
 	ReleaseDate time.Time `json:"release-date"`
 }
 
