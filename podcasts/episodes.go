@@ -2,12 +2,12 @@ package podcasts
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"regexp"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -35,21 +35,23 @@ func (podcast *Podcast) Episodes(index int, count int) []*Episode {
 	startPage := index/episodesPerPage + 1
 	pagesToFetch := int(math.Ceil(float64(count+index%episodesPerPage) / episodesPerPage))
 
-	var wg sync.WaitGroup
-	episodes := make([]*Episode, 0)
+	episodesChan := make(chan []*Episode)
 	for i := 0; i < pagesToFetch; i++ {
-		wg.Add(1)
 		go func(index int) {
-			defer wg.Done()
-			episodesPerPage, err := podcast.scrapEpisodesByPodcast(fmt.Sprintf("%s/-episodes?page=%d", podcast.URL, startPage+index))
+			fetchedEpisodes, err := podcast.scrapEpisodesByPodcast(fmt.Sprintf("%s/-episodes?page=%d", podcast.URL, startPage+index))
 			if err != nil {
-				fmt.Println(err)
-			} else {
-				episodes = append(episodes, episodesPerPage...)
+				log.Println(err)
 			}
+			episodesChan <- fetchedEpisodes
 		}(i)
 	}
-	wg.Wait()
+
+	episodes := []*Episode{}
+	for i := 0; i < pagesToFetch; i++ {
+		page := <-episodesChan
+		episodes = append(episodes, page...)
+	}
+
 	podcast.episodeIndex = index
 	podcast.episodesCount = count
 	// TODO: sort by release date
