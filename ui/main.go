@@ -89,20 +89,19 @@ func Show() {
 	uiEvents := ui.PollEvents()
 	for {
 		select {
-		case <-time.After(time.Microsecond * 700):
+		case <-time.After(time.Millisecond * 16):
 			if audioplayer.MainCtrl != nil {
-				if audioplayer.MainCtrl.Paused == false {
+				if audioplayer.MainCtrl.Paused {
+					audioDurationWidget.Title = "Stopped"
+				} else {
 					position := audioplayer.Position()
 					audioDurationWidget.Title = "Running"
 					audioDurationWidget.Label = fmt.Sprintf("%d:%d", position/60, position%60)
 					if audioDuration > 0 {
 						audioDurationWidget.Percent = (position * 100) / audioDuration
 					}
-					rerender()
-				} else if audioplayer.MainCtrl.Paused == true {
-					audioDurationWidget.Title = "Stopped"
-					rerender()
 				}
+				rerender()
 			}
 		case e := <-uiEvents:
 			switch e.ID {
@@ -186,6 +185,7 @@ func Show() {
 			case "<C-b>":
 				currentListWidget.ScrollPageUp()
 				updateDetailsWidget()
+
 			case "<Escape>", "<C-<Backspace>>", "<Backspace>":
 				currentListWidget = podcastsListWidget
 				currentDetailsWidget = podcastDetailsWidget
