@@ -39,14 +39,15 @@ func (podcast *Podcast) Episodes(index int, count int) []*Episode {
 	for i := 0; i < pagesToFetch; i++ {
 		go func(index int) {
 			fetchedEpisodes, err := podcast.scrapEpisodesByPodcast(fmt.Sprintf("%s/-episodes?page=%d", podcast.URL, startPage+index))
-			if err != nil {
+			if err == nil {
+				episodesChan <- fetchedEpisodes
+			} else {
 				log.Println(err)
 			}
-			episodesChan <- fetchedEpisodes
 		}(i)
 	}
 
-	episodes := []*Episode{}
+	episodes := make([]*Episode, 0)
 	for i := 0; i < pagesToFetch; i++ {
 		page := <-episodesChan
 		episodes = append(episodes, page...)
@@ -54,7 +55,7 @@ func (podcast *Podcast) Episodes(index int, count int) []*Episode {
 
 	podcast.episodeIndex = index
 	podcast.episodesCount = count
-	// TODO: sort by release date
+
 	if len(episodes) < count {
 		sort.Sort(ByDate(episodes))
 		podcast.episodes = episodes
@@ -146,6 +147,6 @@ func SearchEpisode(episodes []*Episode, query string) []*Episode {
 
 type ByDate []*Episode
 
-func (a ByDate) Len() int           { return len(a) }
-func (a ByDate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByDate) Less(i, j int) bool { return a[i].ReleaseDate.After(a[j].ReleaseDate) }
+func (b ByDate) Len() int           { return len(b) }
+func (b ByDate) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+func (b ByDate) Less(i, j int) bool { return b[i].ReleaseDate.After(b[j].ReleaseDate) }

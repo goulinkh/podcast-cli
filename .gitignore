@@ -5,6 +5,9 @@
 *.so
 *.dylib
 
+# binary
+podcast-cli
+
 # Test binary, built with `go test -c`
 *.test
 
@@ -15,7 +18,13 @@
 # vendor/
 
 # IDE
-.idea/ 
+.idea/
 
 # Project
 .cache/
+
+# Vim
+*.swp
+*.swo
+*.swn
+*.un~

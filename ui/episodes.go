@@ -31,12 +31,14 @@ func initEpisodesUI() {
 	episodeDetailsWidget.BorderLeft = false
 	episodeDetailsWidget.BorderBottom = false
 }
+
 func updateEpisodesList() {
-	episodesListWidget.Rows = make([]string, 0)
-	for _, episode := range episodesList {
-		episodesListWidget.Rows = append(episodesListWidget.Rows, episode.Title)
+	episodesListWidget.Rows = make([]string, len(episodesList))
+	for i, episode := range episodesList {
+		episodesListWidget.Rows[i] = episode.Title
 	}
 }
+
 func updateEpisodesDetails() {
 	currentEpisode := episodesList[currentListWidget.SelectedRow]
 	title := fmt.Sprintf("[Title](fg:magenta)        %s", currentEpisode.Title)

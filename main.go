@@ -15,13 +15,18 @@ func main() {
 	podcastSearchQuery := parser.String("s", "search", &argparse.Options{Required: false, Help: "your podcast's name"})
 	err := parser.Parse(os.Args)
 	if err != nil {
-		fmt.Print(parser.Usage(err))
+		fmt.Println("Error:", parser.Usage(err))
+		return
 	}
 	var podcastsList []*podcasts.Podcast
 	if podcastSearchQuery == nil || *podcastSearchQuery == "" {
 		podcastsList, err = podcasts.GetTop50Podcats()
 	} else {
 		podcastsList, err = podcasts.FindPodcasts(*podcastSearchQuery)
+		if len(podcastsList) == 0 {
+			fmt.Println("Error: no podcasts found that satisfy the search query")
+			return
+		}
 	}
 	if err != nil {
 		log.Fatal(err)

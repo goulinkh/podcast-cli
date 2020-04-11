@@ -12,8 +12,7 @@ import (
 var (
 	podcastsListWidget   *widgets.List
 	podcastDetailsWidget *widgets.Paragraph
-
-	podcastsList []*podcasts.Podcast
+	podcastsList         []*podcasts.Podcast
 )
 
 func initPodcastsUI(podcasts []*podcasts.Podcast) {
@@ -32,10 +31,11 @@ func initPodcastsUI(podcasts []*podcasts.Podcast) {
 
 	updatePodcastsList()
 }
+
 func updatePodcastsList() {
-	podcastsListWidget.Rows = make([]string, 0)
-	for _, podcast := range podcastsList {
-		podcastsListWidget.Rows = append(podcastsListWidget.Rows, podcast.Title)
+	podcastsListWidget.Rows = make([]string, len(podcastsList))
+	for i, podcast := range podcastsList {
+		podcastsListWidget.Rows[i] = podcast.Title
 	}
 }
 
@@ -48,8 +48,8 @@ func onPodcastItemClick(index int) {
 	updateDetailsWidget()
 	initGrid()
 	frameUpdate()
-
 }
+
 func updatePodcastDetails() {
 	currentPodcast := podcastsList[currentListWidget.SelectedRow]
 	title := fmt.Sprintf("[Title](fg:magenta)        %s", currentPodcast.Title)
