@@ -36,6 +36,7 @@ func initGrid() {
 	ui.Clear()
 	ui.Render(grid, helpBarWidget)
 }
+
 func initHelpBar() {
 	helpBarWidget = widgets.NewParagraph()
 	helpBarWidget.Text = "[ Enter ](fg:black)[Select](fg:black,bg:green) " +
@@ -50,6 +51,7 @@ func initHelpBar() {
 	helpBarWidget.WrapText = true
 	helpBarWidget.TextStyle = ui.Style{Modifier: ui.ModifierBold, Bg: ui.ColorWhite}
 }
+
 func NewUI(podcasts []*podcasts.Podcast) {
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize the UI: %v", err)
@@ -129,7 +131,6 @@ func Show() {
 							}()
 						}
 					}
-
 				}
 			case "p", "<Space>":
 				if audioplayer.MainCtrl != nil {
@@ -195,10 +196,12 @@ func Show() {
 		}
 	}
 }
+
 func rerender() {
 	ui.Clear()
 	ui.Render(grid, helpBarWidget)
 }
+
 func frameUpdate() {
 	initGrid()
 }

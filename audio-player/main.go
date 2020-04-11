@@ -32,6 +32,7 @@ var (
 func init() {
 	Volume = &effects.Volume{Base: 2}
 }
+
 func downloadContent(URL string, filename string, directory string) (string, error) {
 	response, err := http.Get(URL)
 	if err != nil {
@@ -106,6 +107,7 @@ func SetVolume(percent int) {
 		Volume.Volume = -float64(100-percent) / 100.0 * 5
 	}
 }
+
 func Position() int {
 	return int(Format.SampleRate.D(Streamer.Position()).Round(time.Second).Seconds())
 }
