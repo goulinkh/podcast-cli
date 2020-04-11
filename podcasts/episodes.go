@@ -39,10 +39,10 @@ func (podcast *Podcast) Episodes(index int, count int) []*Episode {
 	for i := 0; i < pagesToFetch; i++ {
 		go func(index int) {
 			fetchedEpisodes, err := podcast.scrapEpisodesByPodcast(fmt.Sprintf("%s/-episodes?page=%d", podcast.URL, startPage+index))
-				episodesChan <- fetchedEpisodes
 				if err != nil {
 					log.Println(err)
 				}
+				episodesChan <- fetchedEpisodes
 		}(i)
 	}
 
