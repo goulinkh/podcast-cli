@@ -89,7 +89,7 @@ func Show() {
 	uiEvents := ui.PollEvents()
 	for {
 		select {
-		case <-time.After(time.Millisecond * 16):
+		case <-time.After(time.Millisecond * 500):
 			if audioplayer.MainCtrl != nil {
 				if audioplayer.MainCtrl.Paused {
 					audioDurationWidget.Title = "Stopped"
