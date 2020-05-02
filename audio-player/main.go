@@ -1,6 +1,7 @@
 package audioplayer
 
 import (
+	"bytes"
 	"errors"
 	"io/ioutil"
 	"net/http"
@@ -33,27 +34,29 @@ func init() {
 	Volume = &effects.Volume{Base: 2}
 }
 
-func downloadContent(URL string, filename string, directory string) (string, error) {
+func getContent(URL string, filename string, directory string) ([]byte, error) {
+	filename = url.PathEscape(path.Clean(strings.ReplaceAll(filename, ":", "")))
+	filepath := path.Join(directory, filename)
+	content, err := ioutil.ReadFile(filepath)
+	if err == nil {
+		return content, nil
+	}
 	response, err := http.Get(URL)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	audio, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	filename = url.PathEscape(path.Clean(strings.ReplaceAll(filename, ":", "")))
 	os.MkdirAll(directory, 0755)
-	tmpFile, err := ioutil.TempFile(directory, filename)
+	// download content if not in .cache
+	err = ioutil.WriteFile(filepath, audio, 0755)
 	if err != nil {
-		return "", err
+		// If we don't have the permissions, we run the audio without caching
+		return audio, err
 	}
-	// download content if not is .cache
-	err = ioutil.WriteFile(tmpFile.Name(), audio, 0755)
-	if err != nil {
-		return "", err
-	}
-	return tmpFile.Name(), nil
+	return audio, nil
 }
 
 // PlaySound play the given audio url, supported Formats: mp3, wav
@@ -61,14 +64,14 @@ func PlaySound(filename, directory, URL string) (int, error) {
 	if Streamer != nil {
 		Streamer.Close()
 	}
-	audioFile, err := downloadContent(URL, filename, directory)
-	if err != nil {
+	audioFile, err := getContent(URL, filename, directory)
+	audioReadCloser := ioutil.NopCloser(bytes.NewReader(audioFile))
+	if audioFile == nil {
 		return 0, err
 	}
-	file, err := os.Open(audioFile)
-	Streamer, Format, err = mp3.Decode(file)
+	Streamer, Format, err = mp3.Decode(audioReadCloser)
 	if err != nil {
-		Streamer, Format, err = wav.Decode(file)
+		Streamer, Format, err = wav.Decode(audioReadCloser)
 	}
 	if err != nil {
 		return 0, errors.New("Unsupported audio format")

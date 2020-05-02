@@ -21,6 +21,7 @@ var (
 	audioDurationWidget   *widgets.Gauge
 	nowPlayingWidget      *widgets.Paragraph
 	currentPlayingEpisode *podcasts.Episode
+	downloading           bool
 )
 
 func initGrid() {
@@ -90,7 +91,7 @@ func Show() {
 	for {
 		select {
 		case <-time.After(time.Millisecond * 500):
-			if audioplayer.MainCtrl != nil {
+			if audioplayer.MainCtrl != nil && !downloading {
 				if audioplayer.MainCtrl.Paused {
 					audioDurationWidget.Title = "Stopped"
 				} else {
@@ -113,13 +114,11 @@ func Show() {
 				} else if currentListWidget == episodesListWidget {
 					episode := episodesList[episodesListWidget.SelectedRow]
 					if episode != currentPlayingEpisode {
-						currentPlayingEpisode = episode
-						nowPlayingWidget.Text = currentPlayingEpisode.Title
 						url, err := episode.AudioURL()
-						audioplayer.MainCtrl = nil
 						if err != nil {
 							audioDurationWidget.Title = "Failed to fetch audio"
 						} else {
+							downloading = true
 							audioDurationWidget.Title = "Downloading audio ..."
 							go func() {
 								audioDuration, err = audioplayer.PlaySound(episode.Title, config.CachePath, url)
@@ -127,6 +126,9 @@ func Show() {
 									audioDurationWidget.Title = "Unsupported audio content"
 								}
 								rerender()
+								downloading = false
+								currentPlayingEpisode = episode
+								nowPlayingWidget.Text = currentPlayingEpisode.Title
 							}()
 						}
 					}
