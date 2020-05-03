@@ -114,7 +114,7 @@ func (p *Podcast) getEpisodes() ([]*Episode, error) {
 	}
 	return episodes, nil
 }
-func getGenres() ([]*Genre, error) {
+func GetGenres() ([]*Genre, error) {
 	resp, err := http.Get(applePodcastsMainPage)
 	if err != nil {
 		return nil, err
@@ -152,7 +152,7 @@ func Main() {
 	res, _ := json.Marshal(podcasts)
 	fmt.Println(string(res))
 	fmt.Println((genres[0].SubGenre[0])) */
-	genres, _ := getGenres()
+	genres, _ := GetGenres()
 	podcasts, _ := genres[0].SubGenre[0].getPodcasts()
 	episodes, _ := podcasts[0].getEpisodes()
 	fmt.Println(len(episodes))

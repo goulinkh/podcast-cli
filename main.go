@@ -1,9 +1,38 @@
 package main
 
-import "github.com/goulinkh/podcast-cli/temp"
+import (
+	"log"
+
+	ui "github.com/gizak/termui/v3"
+
+	newui "github.com/goulinkh/podcast-cli/new-ui"
+	"github.com/goulinkh/podcast-cli/temp"
+)
 
 func main() {
-	temp.Main()
+	genres, err := temp.GetGenres()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := ui.Init(); err != nil {
+		log.Fatalf("failed to initialize the UI: %v", err)
+	}
+	genreWidget := &newui.GenresUI{
+		Genres: genres,
+	}
+	genreWidget.InitComponents()
+	newui.Show(genreWidget)
+
+	uiEvents := ui.PollEvents()
+	for {
+		select {
+		case e := <-uiEvents:
+			cmd := newui.HandleKeyEvent(&e)
+			if cmd == newui.Exit {
+				return
+			}
+		}
+	}
 	// parser := argparse.NewParser("podcast-cli", "CLI podcast player")
 	// podcastSearchQuery := parser.String("s", "search", &argparse.Options{Required: false, Help: "your podcast's name"})
 	// err := parser.Parse(os.Args)
