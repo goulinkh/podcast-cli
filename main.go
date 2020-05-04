@@ -27,7 +27,10 @@ func main() {
 	for {
 		select {
 		case e := <-uiEvents:
-			cmd := newui.HandleKeyEvent(&e)
+			cmd, err := newui.HandleKeyEvent(&e)
+			if err != nil {
+				log.Fatal(err)
+			}
 			if cmd == newui.Exit {
 				return
 			}
