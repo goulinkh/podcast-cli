@@ -7,11 +7,11 @@ import (
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 	audioplayer "github.com/goulinkh/podcast-cli/audio-player"
-	"github.com/goulinkh/podcast-cli/temp"
+	itunesapi "github.com/goulinkh/podcast-cli/itunes-api"
 )
 
 type AudioPlayerWidget struct {
-	nowPlaying          *temp.Episode
+	nowPlaying          *itunesapi.Episode
 	paused              bool
 	audioPositionWidget *widgets.Gauge
 	playerStatusWidget  *widgets.Paragraph
@@ -52,7 +52,7 @@ func (ap *AudioPlayerWidget) HandleEvent(e *ui.Event) (Command, error) {
 	return Nothing, nil
 }
 
-func (ap *AudioPlayerWidget) Play(e *temp.Episode) {
+func (ap *AudioPlayerWidget) Play(e *itunesapi.Episode) {
 	if ap.nowPlaying != nil && ap.nowPlaying.Id == e.Id {
 		return
 	}

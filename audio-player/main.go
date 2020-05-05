@@ -17,7 +17,7 @@ import (
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
 	"github.com/goulinkh/podcast-cli/config"
-	"github.com/goulinkh/podcast-cli/temp"
+	itunesapi "github.com/goulinkh/podcast-cli/itunes-api"
 )
 
 type AudioPlayer struct {
@@ -60,7 +60,7 @@ func downloadContent(URL string, filename string, directory string) (string, err
 }
 
 // PlaySound play the given audio url, supported Formats: mp3, wav
-func PlaySound(e *temp.Episode) error {
+func PlaySound(e *itunesapi.Episode) error {
 	if Streamer != nil {
 		Streamer.Close()
 	}

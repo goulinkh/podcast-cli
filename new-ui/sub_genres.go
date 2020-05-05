@@ -5,11 +5,11 @@ import (
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
-	"github.com/goulinkh/podcast-cli/temp"
+	itunesapi "github.com/goulinkh/podcast-cli/itunes-api"
 )
 
 type SubGenresUI struct {
-	Genres     []*temp.Genre
+	Genres     []*itunesapi.Genre
 	gridWidget *ui.Grid
 	listWidget *widgets.List
 }

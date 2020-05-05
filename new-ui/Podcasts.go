@@ -7,11 +7,11 @@ import (
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
-	"github.com/goulinkh/podcast-cli/temp"
+	itunesapi "github.com/goulinkh/podcast-cli/itunes-api"
 )
 
 type PodcastsUI struct {
-	Podcasts      []*temp.Podcast
+	Podcasts      []*itunesapi.Podcast
 	listWidget    *widgets.List
 	detailsWidget *widgets.Paragraph
 	gridWidget    *ui.Grid

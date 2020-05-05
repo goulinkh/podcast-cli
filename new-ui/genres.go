@@ -6,11 +6,11 @@ import (
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
-	"github.com/goulinkh/podcast-cli/temp"
+	itunesapi "github.com/goulinkh/podcast-cli/itunes-api"
 )
 
 type GenresUI struct {
-	Genres     []*temp.Genre
+	Genres     []*itunesapi.Genre
 	gridWidget *ui.Grid
 	listWidget *widgets.List
 }
@@ -37,7 +37,7 @@ func (g *GenresUI) HandleEvent(event *ui.Event) (Command, error) {
 		subGenres := g.Genres[g.listWidget.SelectedRow].SubGenre
 		var subGenreUI *SubGenresUI
 		if subGenres == nil || len(subGenres) == 0 {
-			subGenreUI = &SubGenresUI{Genres: []*temp.Genre{g.Genres[g.listWidget.SelectedRow]}}
+			subGenreUI = &SubGenresUI{Genres: []*itunesapi.Genre{g.Genres[g.listWidget.SelectedRow]}}
 		} else {
 			subGenreUI = &SubGenresUI{Genres: g.Genres[g.listWidget.SelectedRow].SubGenre}
 		}
