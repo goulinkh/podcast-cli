@@ -33,7 +33,13 @@ func (g *GenresUI) HandleEvent(event *ui.Event) (Command, error) {
 	case "k", "<Up>":
 		g.listWidget.ScrollUp()
 	case "<Enter>":
-		subGenreUI := &SubGenresUI{Genres: g.Genres[g.listWidget.SelectedRow].SubGenre}
+		subGenres := g.Genres[g.listWidget.SelectedRow].SubGenre
+		var subGenreUI *SubGenresUI
+		if subGenres == nil || len(subGenres) == 0 {
+			subGenreUI = &SubGenresUI{Genres: []*temp.Genre{g.Genres[g.listWidget.SelectedRow]}}
+		} else {
+			subGenreUI = &SubGenresUI{Genres: g.Genres[g.listWidget.SelectedRow].SubGenre}
+		}
 		subGenreUI.InitComponents()
 		Show(subGenreUI)
 	}
