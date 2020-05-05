@@ -6,7 +6,7 @@ import (
 	ui "github.com/gizak/termui/v3"
 
 	itunesapi "github.com/goulinkh/podcast-cli/itunes-api"
-	newui "github.com/goulinkh/podcast-cli/new-ui"
+	newui "github.com/goulinkh/podcast-cli/ui"
 )
 
 func main() {

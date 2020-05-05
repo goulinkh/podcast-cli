@@ -1,4 +1,4 @@
-package newui
+package ui
 
 type Command int
 

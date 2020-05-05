@@ -1,4 +1,4 @@
-package newui
+package ui
 
 import (
 	"fmt"
