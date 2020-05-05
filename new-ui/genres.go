@@ -2,7 +2,6 @@ package newui
 
 import (
 	"errors"
-	"fmt"
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
@@ -41,11 +40,8 @@ func (g *GenresUI) HandleEvent(event *ui.Event) (Command, error) {
 			if err != nil {
 				return Nothing, err
 			}
-			podcastsUI := &PodcastsUI{
-				Podcasts: podcasts,
-			}
+			podcastsUI := &PodcastsUI{Podcasts: podcasts}
 			err = podcastsUI.InitComponents()
-			fmt.Println(podcastsUI.MainUI())
 			if err != nil {
 				return Nothing, err
 			}

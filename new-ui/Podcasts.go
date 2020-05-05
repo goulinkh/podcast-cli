@@ -36,7 +36,16 @@ func (p *PodcastsUI) HandleEvent(event *ui.Event) (Command, error) {
 		p.updateDetailsWidget()
 
 	case "<Enter>":
-		// Show(Episodes)
+		episodes, err := p.Podcasts[p.listWidget.SelectedRow].GetEpisodes()
+		if err != nil {
+			return Nothing, err
+		}
+		episodesUI := &EpisodesUI{Episodes: episodes}
+		err = episodesUI.InitComponents()
+		if err != nil {
+			return Nothing, err
+		}
+		Show(episodesUI)
 	}
 	return Nothing, nil
 }

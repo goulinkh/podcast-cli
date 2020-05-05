@@ -36,7 +36,7 @@ type Episode struct {
 	Artwork                string `json:"artwork"`
 	Title                  string `json:"title"`
 	AudioURL               string `json:"audiourl"`
-	releaseDate            string `json:"releasedate"`
+	ReleaseDate            string `json:"releasedate"`
 	DurationInMilliseconds string `json:"duratioInMilliseconds"`
 	Description            string `json:"description"`
 }
@@ -100,7 +100,7 @@ func (p *Podcast) GetEpisodes() ([]*Episode, error) {
 			Artwork:                episode.Get(`attributes.artwork.url`).String(),
 			Title:                  episode.Get(`attributes.name`).String(),
 			AudioURL:               episode.Get(`attributes.assetUrl`).String(),
-			releaseDate:            episode.Get(`attributes.releaseDateTime`).String(),
+			ReleaseDate:            episode.Get(`attributes.releaseDateTime`).String(),
 			DurationInMilliseconds: episode.Get(`attributes.durationInMilliseconds`).String(),
 			Description:            episode.Get(`attributes.description.standard`).String(),
 		}
