@@ -37,7 +37,7 @@ type Episode struct {
 	Title                  string `json:"title"`
 	AudioURL               string `json:"audiourl"`
 	ReleaseDate            string `json:"releasedate"`
-	DurationInMilliseconds string `json:"duratioInMilliseconds"`
+	DurationInMilliseconds int    `json:"duratioInMilliseconds"`
 	Description            string `json:"description"`
 }
 
@@ -93,16 +93,19 @@ func (p *Podcast) GetEpisodes() ([]*Episode, error) {
 
 	}
 	episodesJSON := gjson.Get(string(data), "data").Array()
-	episodes := make([]*Episode, len(episodesJSON))
-	for i, episode := range episodesJSON {
-		episodes[i] = &Episode{
-			Id:                     episode.Get(`id`).String(),
-			Artwork:                episode.Get(`attributes.artwork.url`).String(),
-			Title:                  episode.Get(`attributes.name`).String(),
-			AudioURL:               episode.Get(`attributes.assetUrl`).String(),
-			ReleaseDate:            episode.Get(`attributes.releaseDateTime`).String(),
-			DurationInMilliseconds: episode.Get(`attributes.durationInMilliseconds`).String(),
-			Description:            episode.Get(`attributes.description.standard`).String(),
+	episodes := make([]*Episode, 0)
+	for _, episode := range episodesJSON {
+		if episode.Get(`attributes.mediaKind`).String() == "audio" {
+
+			episodes = append(episodes, &Episode{
+				Id:                     episode.Get(`id`).String(),
+				Artwork:                episode.Get(`attributes.artwork.url`).String(),
+				Title:                  episode.Get(`attributes.name`).String(),
+				AudioURL:               episode.Get(`attributes.assetUrl`).String(),
+				ReleaseDate:            episode.Get(`attributes.releaseDateTime`).String(),
+				DurationInMilliseconds: int(episode.Get(`attributes.durationInMilliseconds`).Int()),
+				Description:            episode.Get(`attributes.description.standard`).String(),
+			})
 		}
 	}
 	return episodes, nil

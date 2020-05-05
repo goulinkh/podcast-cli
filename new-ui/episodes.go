@@ -38,7 +38,7 @@ func (e *EpisodesUI) HandleEvent(event *ui.Event) (Command, error) {
 		e.updateDetailsWidget()
 
 	case "<Enter>":
-		// Show(Episodes)
+		audioPlayerWidget.Play(e.Episodes[e.listWidget.SelectedRow])
 	}
 	return Nothing, nil
 }
@@ -56,7 +56,9 @@ func (e *EpisodesUI) initGridWidget() error {
 	e.gridWidget.Set(
 		ui.NewRow(1.0,
 			ui.NewCol(1.0/2, e.listWidget),
-			ui.NewCol(1.0/2, ui.NewRow(5.0/7, e.detailsWidget))))
+			ui.NewCol(1.0/2,
+				ui.NewRow(5.0/7, e.detailsWidget),
+				ui.NewRow(2.0/7, audioPlayerWidget.MainUI()))))
 	return nil
 }
 
@@ -81,9 +83,13 @@ func (e *EpisodesUI) initDetailsWidget() {
 	e.updateDetailsWidget()
 }
 func (e *EpisodesUI) updateDetailsWidget() {
+	if e.Episodes == nil || len(e.Episodes) == 0 {
+		return
+	}
 	currentEpisode := e.Episodes[e.listWidget.SelectedRow]
 	title := fmt.Sprintf("[Title](fg:magenta)        %s", currentEpisode.Title)
 	description := fmt.Sprintf("[Description](fg:magenta)  %s", currentEpisode.Description)
 	date := fmt.Sprintf("[Release Date](fg:magenta) %s", currentEpisode.ReleaseDate)
-	e.detailsWidget.Text = strings.Join([]string{title, description, date}, "\n")
+	duration := fmt.Sprintf("[Duration](fg:magenta)     %d min", currentEpisode.DurationInMilliseconds/60000)
+	e.detailsWidget.Text = strings.Join([]string{title, duration, date, description}, "\n")
 }

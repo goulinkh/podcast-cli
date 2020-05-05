@@ -48,12 +48,12 @@ func (g *SubGenresUI) HandleEvent(event *ui.Event) (Command, error) {
 }
 func (g *SubGenresUI) newGenresListWidget() error {
 	g.listWidget = widgets.NewList()
-	g.listWidget.Title = "Select a Genre"
+	g.listWidget.Title = "Select a Sub Genre"
 	g.listWidget.TextStyle = ui.NewStyle(FgColor)
 	g.listWidget.SelectedRowStyle = ui.NewStyle(AccentColor)
 	g.listWidget.BorderStyle.Fg = AccentColor
 	if g.Genres == nil {
-		return errors.New("Missing Genres array")
+		return errors.New("Missing Sub Genres array")
 	}
 	g.listWidget.Rows = make([]string, len(g.Genres))
 	for i, genre := range g.Genres {
@@ -63,14 +63,15 @@ func (g *SubGenresUI) newGenresListWidget() error {
 }
 func (g *SubGenresUI) newGridWidget() error {
 	if g.listWidget == nil {
-		return errors.New("Uninitialized genres list widget")
+		return errors.New("Uninitialized sub genres list widget")
 	}
 	g.gridWidget = ui.NewGrid()
 	termWidth, termHeight := ui.TerminalDimensions()
 	g.gridWidget.SetRect(0, 0, termWidth, termHeight-1)
 	g.gridWidget.Set(
 		ui.NewRow(1.0,
-			ui.NewCol(1.0, g.listWidget)))
+			ui.NewCol(1.0/2, g.listWidget),
+			ui.NewCol(1.0/2, audioPlayerWidget.MainUI())))
 	return nil
 }
 func (g *SubGenresUI) refreshComponents() {
@@ -82,5 +83,6 @@ func (g *SubGenresUI) refreshComponents() {
 	g.gridWidget.SetRect(0, 0, termWidth, termHeight-1)
 	g.gridWidget.Set(
 		ui.NewRow(1.0,
-			ui.NewCol(1.0, g.listWidget)))
+			ui.NewCol(1.0/2, g.listWidget),
+			ui.NewCol(1.0/2, audioPlayerWidget.MainUI())))
 }

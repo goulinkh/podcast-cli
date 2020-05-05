@@ -14,8 +14,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := ui.Init(); err != nil {
-		log.Fatalf("failed to initialize the UI: %v", err)
+	err = newui.InitUI()
+	if err != nil {
+		log.Fatal(err)
 	}
 	genreWidget := &newui.GenresUI{
 		Genres: genres,

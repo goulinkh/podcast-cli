@@ -2,6 +2,7 @@ package newui
 
 import (
 	"errors"
+	"fmt"
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
@@ -67,8 +68,10 @@ func (g *GenresUI) newGridWidget() error {
 	g.gridWidget = ui.NewGrid()
 	termWidth, termHeight := ui.TerminalDimensions()
 	g.gridWidget.SetRect(0, 0, termWidth, termHeight-1)
+	fmt.Println(audioPlayerWidget)
 	g.gridWidget.Set(
 		ui.NewRow(1.0,
-			ui.NewCol(1.0, g.listWidget)))
+			ui.NewCol(1.0/2, g.listWidget),
+			ui.NewCol(1.0/2, audioPlayerWidget.MainUI())))
 	return nil
 }

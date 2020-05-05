@@ -62,7 +62,9 @@ func (p *PodcastsUI) initGridWidget() error {
 	p.gridWidget.Set(
 		ui.NewRow(1.0,
 			ui.NewCol(1.0/2, p.listWidget),
-			ui.NewCol(1.0/2, ui.NewRow(5.0/7, p.detailsWidget))))
+			ui.NewCol(1.0/2,
+				ui.NewRow(5.0/7, p.detailsWidget),
+				ui.NewRow(2.0/7, audioPlayerWidget.MainUI()))))
 	return nil
 }
 func (p *PodcastsUI) initListWidget() {
@@ -85,6 +87,9 @@ func (p *PodcastsUI) initDetailsWidget() {
 	p.updateDetailsWidget()
 }
 func (p *PodcastsUI) updateDetailsWidget() {
+	if p.Podcasts == nil || len(p.Podcasts) == 0 {
+		return
+	}
 	currentPodcast := p.Podcasts[p.listWidget.SelectedRow]
 	title := fmt.Sprintf("[Title](fg:magenta)        %s", currentPodcast.Title)
 	description := fmt.Sprintf("[Description](fg:magenta)  %s", currentPodcast.Description)
