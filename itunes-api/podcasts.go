@@ -18,6 +18,42 @@ type Podcast struct {
 	Author      string `json:"author"`
 }
 
+func FindPodcasts(query string) ([]*Podcast, error) {
+	authorization, err := getAuthorization()
+	if err != nil {
+		return nil, err
+	}
+
+	request, err := http.NewRequest("GET", fmt.Sprintf("https://itunes.apple.com/search?country=us&entity=podcast&term=%s", query), nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Authorization", authorization)
+	resp, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	podcastsJSON := gjson.Get(string(data), "results").Array()
+	podcasts := make([]*Podcast, 0)
+	for _, podcast := range podcastsJSON {
+		if podcast.Get("kind").String() == "podcast" && podcast.Get("wrapperType").String() == "track" {
+			podcasts = append(podcasts, &Podcast{
+				Author:      podcast.Get("artistName").String(),
+				Description: "",
+				Id:          podcast.Get("trackId").String(),
+				Title:       podcast.Get("collectionName").String(),
+				URL:         regexp.MustCompile(`\?.*$`).ReplaceAllString(podcast.Get("collectionViewUrl").String(), ""),
+			})
+		}
+	}
+	return podcasts, nil
+}
 func (p *Podcast) GetEpisodes() ([]*Episode, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://amp-api.podcasts.apple.com/v1/catalog/us/podcasts/%s/episodes?offset=0&limit=300", p.Id), nil)
 	if err != nil {
@@ -57,6 +93,37 @@ func (p *Podcast) GetEpisodes() ([]*Episode, error) {
 	}
 	return episodes, nil
 }
+
+func (g *Genre) GetPodcasts() ([]*Podcast, error) {
+	request, err := http.NewRequest("GET", "https://amp-api.podcasts.apple.com/v1/catalog/us/charts?types=podcasts&limit=200&genre="+g.Id, nil)
+	if err != nil {
+		return nil, err
+	}
+	authorization, err := getAuthorization()
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Authorization", authorization)
+	resp, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	podcastsJSON := gjson.Get(string(data), "results.podcasts.0.data").Array()
+	podcasts := make([]*Podcast, len(podcastsJSON))
+	for i, podcast := range podcastsJSON {
+		podcasts[i] = &Podcast{
+			Id:          podcast.Get("id").String(),
+			Description: podcast.Get("attributes.description.standard").String(),
+			Title:       podcast.Get("attributes.name").String(),
+			URL:         "https://amp-api.podcasts.apple.com" + podcast.Get("href").String(),
+			Author:      podcast.Get("attributes.artistName").String(),
+		}
+	}
+	return podcasts, nil
+}
+
 func getAuthorization() (string, error) {
 	if authorization != "" {
 		return authorization, nil
