@@ -23,7 +23,7 @@ func (p *PodcastsUI) InitComponents() error {
 	err := p.initGridWidget()
 	return err
 }
-func (p PodcastsUI) MainUI() *ui.Grid {
+func (p *PodcastsUI) MainUI() *ui.Grid {
 	return p.gridWidget
 }
 func (p *PodcastsUI) HandleEvent(event *ui.Event) (Command, error) {

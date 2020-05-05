@@ -1,8 +1,6 @@
 package newui
 
 import (
-	"fmt"
-
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 )
@@ -10,7 +8,8 @@ import (
 var (
 	FgColor       = ui.ColorWhite
 	AccentColor   = ui.ColorMagenta
-	currentPage   *Page
+	pagesHistory  = make([]Page, 0)
+	currentPage   Page
 	helpBarWidget *widgets.Paragraph
 )
 
@@ -20,27 +19,52 @@ type Page interface {
 }
 
 func Show(p Page) {
+	if currentPage != nil {
+		pagesHistory = append(pagesHistory, currentPage)
+	}
+
+	show(p)
+}
+
+func show(p Page) {
 	if helpBarWidget == nil {
 		helpBarWidget = newHelpBarWidget()
 	}
-	fmt.Println(p.MainUI())
+	currentPage = p
+	RefreshUI()
+}
+
+func RefreshUI() {
 	ui.Clear()
-	ui.Render(p.MainUI(), helpBarWidget)
-	currentPage = &p
+	ui.Render(currentPage.MainUI(), helpBarWidget)
+}
+
+func GoBack() {
+	if len(pagesHistory) == 0 {
+		return
+	}
+	previousPage := pagesHistory[len(pagesHistory)-1]
+	pagesHistory = pagesHistory[:len(pagesHistory)-1]
+	show(previousPage)
 }
 func HandleKeyEvent(e *ui.Event) (Command, error) {
 	switch e.ID {
 	case "q", "<C-c>":
-		ui.Close()
+		ui.Close()q
 		return Exit, nil
+
+	case "<Escape>", "<C-<Backspace>>", "<Backspace>":
+		GoBack()
+		RefreshUI()
 	default:
-		cmd, err := (*currentPage).HandleEvent(e)
-		ui.Clear()
-		ui.Render((*currentPage).MainUI(), helpBarWidget)
+		cmd, err := currentPage.HandleEvent(e)
+		RefreshUI()
 		return cmd, err
 	}
+	return Nothing, nil
 
 }
+
 func newHelpBarWidget() *widgets.Paragraph {
 	helpBarWidget := widgets.NewParagraph()
 	helpBarWidget.Text = "[ Enter ](fg:black)[Select](fg:black,bg:green) " +

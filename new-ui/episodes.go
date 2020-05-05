@@ -24,7 +24,7 @@ func (e *EpisodesUI) InitComponents() error {
 	return err
 }
 
-func (e EpisodesUI) MainUI() *ui.Grid {
+func (e *EpisodesUI) MainUI() *ui.Grid {
 	return e.gridWidget
 }
 

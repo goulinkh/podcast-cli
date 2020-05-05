@@ -24,7 +24,7 @@ func (g *GenresUI) InitComponents() error {
 	}
 	return nil
 }
-func (g GenresUI) MainUI() *ui.Grid {
+func (g *GenresUI) MainUI() *ui.Grid {
 	return g.gridWidget
 }
 func (g *GenresUI) HandleEvent(event *ui.Event) (Command, error) {
