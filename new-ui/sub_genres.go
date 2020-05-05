@@ -8,13 +8,13 @@ import (
 	"github.com/goulinkh/podcast-cli/temp"
 )
 
-type GenresUI struct {
+type SubGenresUI struct {
 	Genres     []*temp.Genre
 	gridWidget *ui.Grid
 	listWidget *widgets.List
 }
 
-func (g *GenresUI) InitComponents() error {
+func (g *SubGenresUI) InitComponents() error {
 	g.newGenresListWidget()
 	err := g.newGridWidget()
 	if err != nil {
@@ -22,10 +22,10 @@ func (g *GenresUI) InitComponents() error {
 	}
 	return nil
 }
-func (g *GenresUI) MainUI() *ui.Grid {
+func (g *SubGenresUI) MainUI() *ui.Grid {
 	return g.gridWidget
 }
-func (g *GenresUI) HandleEvent(event *ui.Event) (Command, error) {
+func (g *SubGenresUI) HandleEvent(event *ui.Event) (Command, error) {
 	switch event.ID {
 	case "j", "<Down>":
 		g.listWidget.ScrollDown()
@@ -33,13 +33,20 @@ func (g *GenresUI) HandleEvent(event *ui.Event) (Command, error) {
 	case "k", "<Up>":
 		g.listWidget.ScrollUp()
 	case "<Enter>":
-		subGenreUI := &SubGenresUI{Genres: g.Genres[g.listWidget.SelectedRow].SubGenre}
-		subGenreUI.InitComponents()
-		Show(subGenreUI)
+		podcasts, err := g.Genres[g.listWidget.SelectedRow].GetPodcasts()
+		if err != nil {
+			return Nothing, err
+		}
+		podcastsUI := &PodcastsUI{Podcasts: podcasts}
+		err = podcastsUI.InitComponents()
+		if err != nil {
+			return Nothing, err
+		}
+		Show(podcastsUI)
 	}
 	return Nothing, nil
 }
-func (g *GenresUI) newGenresListWidget() error {
+func (g *SubGenresUI) newGenresListWidget() error {
 	g.listWidget = widgets.NewList()
 	g.listWidget.Title = "Select a Genre"
 	g.listWidget.TextStyle = ui.NewStyle(FgColor)
@@ -54,7 +61,7 @@ func (g *GenresUI) newGenresListWidget() error {
 	}
 	return nil
 }
-func (g *GenresUI) newGridWidget() error {
+func (g *SubGenresUI) newGridWidget() error {
 	if g.listWidget == nil {
 		return errors.New("Uninitialized genres list widget")
 	}
@@ -65,4 +72,15 @@ func (g *GenresUI) newGridWidget() error {
 		ui.NewRow(1.0,
 			ui.NewCol(1.0, g.listWidget)))
 	return nil
+}
+func (g *SubGenresUI) refreshComponents() {
+	g.listWidget.Rows = make([]string, len(g.Genres))
+	for i, genre := range g.Genres {
+		g.listWidget.Rows[i] = genre.Text
+	}
+	termWidth, termHeight := ui.TerminalDimensions()
+	g.gridWidget.SetRect(0, 0, termWidth, termHeight-1)
+	g.gridWidget.Set(
+		ui.NewRow(1.0,
+			ui.NewCol(1.0, g.listWidget)))
 }

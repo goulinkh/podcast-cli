@@ -50,7 +50,7 @@ func GoBack() {
 func HandleKeyEvent(e *ui.Event) (Command, error) {
 	switch e.ID {
 	case "q", "<C-c>":
-		ui.Close()q
+		ui.Close()
 		return Exit, nil
 
 	case "<Escape>", "<C-<Backspace>>", "<Backspace>":
