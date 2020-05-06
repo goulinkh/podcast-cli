@@ -69,7 +69,9 @@ func (ap *AudioPlayerWidget) Play(e *itunesapi.Episode) {
 						ap.audioPositionWidget.Title = "Running"
 						ap.audioPositionWidget.Label = fmt.Sprintf("%d:%d", position/60, position%60)
 						audioDuration := e.DurationInMilliseconds / 1000
-						ap.audioPositionWidget.Percent = (position * 100) / audioDuration
+						if audioDuration > 0 {
+							ap.audioPositionWidget.Percent = (position * 100) / audioDuration
+						}
 					}
 					RefreshUI()
 				}
