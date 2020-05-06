@@ -3,6 +3,7 @@ package audioplayer
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -16,6 +17,8 @@ import (
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/wav"
+	"github.com/goulinkh/podcast-cli/config"
+	itunesapi "github.com/goulinkh/podcast-cli/itunes-api"
 )
 
 type AudioPlayer struct {
@@ -60,21 +63,26 @@ func getContent(URL string, filename string, directory string) ([]byte, error) {
 }
 
 // PlaySound play the given audio url, supported Formats: mp3, wav
-func PlaySound(filename, directory, URL string) (int, error) {
+func PlaySound(e *itunesapi.Episode) error {
 	if Streamer != nil {
+		speaker.Lock()
 		Streamer.Close()
+		speaker.Unlock()
 	}
+	URL := e.AudioURL
+	filename := fmt.Sprintf("%s.mp3", e.Id)
+	directory := config.CachePath
 	audioFile, err := getContent(URL, filename, directory)
 	audioReadCloser := ioutil.NopCloser(bytes.NewReader(audioFile))
 	if audioFile == nil {
-		return 0, err
+		return err
 	}
 	Streamer, Format, err = mp3.Decode(audioReadCloser)
 	if err != nil {
 		Streamer, Format, err = wav.Decode(audioReadCloser)
 	}
 	if err != nil {
-		return 0, errors.New("Unsupported audio format")
+		return errors.New("Unsupported audio format")
 	}
 	sr := Format.SampleRate * 2
 	speaker.Init(sr, sr.N(time.Second/10))
@@ -82,8 +90,8 @@ func PlaySound(filename, directory, URL string) (int, error) {
 	Volume.Streamer = beep.Resample(4, Format.SampleRate, sr, Streamer)
 	MainCtrl = &beep.Ctrl{Streamer: Volume}
 	speaker.Play(MainCtrl)
-
-	return int(float32(Streamer.Len()) / float32(Format.SampleRate)), nil
+	e.DurationInMilliseconds = int(float32(Streamer.Len())/float32(Format.SampleRate)) * 1000
+	return nil
 }
 
 func PauseSong(state bool) {
