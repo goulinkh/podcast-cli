@@ -1,7 +1,6 @@
 package audioplayer
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -37,29 +36,27 @@ func init() {
 	Volume = &effects.Volume{Base: 2}
 }
 
-func getContent(URL string, filename string, directory string) ([]byte, error) {
-	filename = url.PathEscape(path.Clean(strings.ReplaceAll(filename, ":", "")))
-	filepath := path.Join(directory, filename)
-	content, err := ioutil.ReadFile(filepath)
+func fetchContent(URL string, filepath string, directory string) error {
+
+	_, err := ioutil.ReadFile(filepath)
 	if err == nil {
-		return content, nil
+		return nil
 	}
 	response, err := http.Get(URL)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	audio, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	os.MkdirAll(directory, 0755)
 	// download content if not in .cache
 	err = ioutil.WriteFile(filepath, audio, 0755)
 	if err != nil {
-		// If we don't have the permissions, we run the audio without caching
-		return audio, err
+		return err
 	}
-	return audio, nil
+	return nil
 }
 
 // PlaySound play the given audio url, supported Formats: mp3, wav
@@ -72,14 +69,22 @@ func PlaySound(e *itunesapi.Episode) error {
 	URL := e.AudioURL
 	filename := fmt.Sprintf("%s.mp3", e.Id)
 	directory := config.CachePath
-	audioFile, err := getContent(URL, filename, directory)
-	audioReadCloser := ioutil.NopCloser(bytes.NewReader(audioFile))
-	if audioFile == nil {
+	filename = url.PathEscape(path.Clean(strings.ReplaceAll(filename, ":", "")))
+	filepath := path.Join(directory, filename)
+	file, err := os.Open(filepath)
+	if err != nil {
+		err = fetchContent(URL, filepath, directory)
+		if err != nil {
+			return err
+		}
+	}
+	file, err = os.Open(filepath)
+	if err != nil {
 		return err
 	}
-	Streamer, Format, err = mp3.Decode(audioReadCloser)
+	Streamer, Format, err = mp3.Decode(file)
 	if err != nil {
-		Streamer, Format, err = wav.Decode(audioReadCloser)
+		Streamer, Format, err = wav.Decode(file)
 	}
 	if err != nil {
 		return errors.New("Unsupported audio format")
