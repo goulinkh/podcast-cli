@@ -15,14 +15,14 @@ Fetch the [latest release](https://github.com/goulinkh/podcast-cli/releases)
 #### Linux
 
 ```bash
-sudo wget https://github.com/goulinkh/podcast-cli/releases/download/v0.1.1/podcast-cli-0.1.1-linux-amd64 -O /usr/local/bin/podcast-cli
+sudo wget https://github.com/goulinkh/podcast-cli/releases/download/v1.0.0/podcast-cli-1.0.0-linux-amd64 -O /usr/local/bin/podcast-cli
 sudo chmod +x /usr/local/bin/podcast-cli
 ```
 
 #### OS X
 
 ```bash
-sudo curl -Lo /usr/local/bin/podcast-cli https://github.com/goulinkh/podcast-cli/releases/download/v0.1.1/podcast-cli-0.1.1-darwin-amd64
+sudo curl -Lo /usr/local/bin/podcast-cli https://github.com/goulinkh/podcast-cli/releases/download/v1.0.0/podcast-cli-1.0.0-darwin-amd64
 sudo chmod +x /usr/local/bin/podcast-cli
 ```
 
@@ -46,10 +46,9 @@ sudo chmod +x /usr/local/bin/podcast-cli
 | `Right`    | +10s   |
 | `Left`     | -10s   |
 | `q`        | Exit   |
-| `s`        | SEARCH |
 
 
 ## Issues
 
 * Unable to get audio length of a remote content, I have to download the audio file before playing it
-* Bad Podcasts API, I have to make a free access API or find a better one
+
