@@ -90,7 +90,7 @@ func PlaySound(e *itunesapi.Episode) error {
 		return errors.New("Unsupported audio format")
 	}
 	sr := Format.SampleRate * 2
-	speaker.Init(sr, sr.N(time.Second/10))
+	speaker.Init(sr, sr.N(time.Millisecond*500))
 
 	Volume.Streamer = beep.Resample(4, Format.SampleRate, sr, Streamer)
 	MainCtrl = &beep.Ctrl{Streamer: Volume}
