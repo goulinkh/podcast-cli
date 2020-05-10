@@ -15,14 +15,14 @@ Fetch the [latest release](https://github.com/goulinkh/podcast-cli/releases)
 #### Linux
 
 ```bash
-sudo wget https://github.com/goulinkh/podcast-cli/releases/download/1.0.0/podcast-cli-1.0.0-linux-amd64 -O /usr/local/bin/podcast-cli
+sudo wget https://github.com/goulinkh/podcast-cli/releases/download/1.1.0/podcast-cli-1.1.0-linux-amd64 -O /usr/local/bin/podcast-cli
 sudo chmod +x /usr/local/bin/podcast-cli
 ```
 
 #### OS X
 
 ```bash
-sudo curl -Lo /usr/local/bin/podcast-cli https://github.com/goulinkh/podcast-cli/releases/download/1.0.0/podcast-cli-1.0.0-darwin-amd64
+sudo curl -Lo /usr/local/bin/podcast-cli https://github.com/goulinkh/podcast-cli/releases/download/1.1.0/podcast-cli-1.1.0-darwin-amd64
 sudo chmod +x /usr/local/bin/podcast-cli
 ```
 
