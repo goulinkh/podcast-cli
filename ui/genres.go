@@ -76,7 +76,7 @@ func (g *GenresUI) newGridWidget() error {
 		ui.NewRow(1.0,
 			ui.NewCol(1.0/2, g.listWidget),
 			ui.NewCol(1.0/2,
-				ui.NewRow(6.0/8, placeholder),
-				ui.NewRow(2.0/8, audioPlayerWidget.MainUI()))))
+				ui.NewRow(6.0/10, placeholder),
+				ui.NewRow(4.0/10, audioPlayerWidget.MainUI()))))
 	return nil
 }

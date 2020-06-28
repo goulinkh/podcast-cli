@@ -63,8 +63,8 @@ func (p *PodcastsUI) initGridWidget() error {
 		ui.NewRow(1.0,
 			ui.NewCol(1.0/2, p.listWidget),
 			ui.NewCol(1.0/2,
-				ui.NewRow(6.0/8, p.detailsWidget),
-				ui.NewRow(2.0/8, audioPlayerWidget.MainUI()))))
+				ui.NewRow(6.0/10, p.detailsWidget),
+				ui.NewRow(4.0/10, audioPlayerWidget.MainUI()))))
 	return nil
 }
 func (p *PodcastsUI) initListWidget() {

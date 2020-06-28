@@ -57,8 +57,8 @@ func (e *EpisodesUI) initGridWidget() error {
 		ui.NewRow(1.0,
 			ui.NewCol(1.0/2, e.listWidget),
 			ui.NewCol(1.0/2,
-				ui.NewRow(6.0/8, e.detailsWidget),
-				ui.NewRow(2.0/8, audioPlayerWidget.MainUI()))))
+				ui.NewRow(6.0/10, e.detailsWidget),
+				ui.NewRow(4.0/10, audioPlayerWidget.MainUI()))))
 	return nil
 }
 

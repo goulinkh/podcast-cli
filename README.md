@@ -38,14 +38,16 @@ sudo chmod +x /usr/local/bin/podcast-cli
 
 ### Keybindings
 
-| Key        | Action |
-| ---------- | ------ |
-| `Enter`    | Select |
-| `p, Space` | Pause  |
-| `Esc`      | Back   |
-| `Right`    | +10s   |
-| `Left`     | -10s   |
-| `q`        | Exit   |
+| Key        | Action   |
+| ---------- | -------- |
+| `Enter`    | Select   |
+| `p, Space` | Pause    |
+| `Esc`      | Back     |
+| `Right`    | +10s     |
+| `Left`     | -10s     |
+| `u`        | Slowdown |
+| `d`        | Speedup  |
+| `q`        | Exit     |
 
 
 ## Issues

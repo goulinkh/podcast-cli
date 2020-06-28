@@ -50,11 +50,11 @@ func (ap *AudioPlayerWidget) HandleEvent(e *ui.Event) (Command, error) {
 				audioplayer.Seek(position)
 			}
 		}
-	case "]":
+	case "u":
 		if audioplayer.MainCtrl != nil && ap.nowPlaying != nil {
 			audioplayer.IncreaseSpeed()
 		}
-	case "[":
+	case "d":
 		if audioplayer.MainCtrl != nil && ap.nowPlaying != nil {
 			audioplayer.DecreaseSpeed()
 		}
