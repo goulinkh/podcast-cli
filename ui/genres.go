@@ -49,7 +49,8 @@ func (g *GenresUI) newGenresListWidget() error {
 	g.listWidget = widgets.NewList()
 	g.listWidget.Title = "Select a Genre"
 	g.listWidget.TextStyle = ui.NewStyle(FgColor)
-	g.listWidget.SelectedRowStyle = ui.NewStyle(AccentColor)
+	g.listWidget.SelectedRowStyle.Fg = ui.ColorBlack
+	g.listWidget.SelectedRowStyle.Bg = AccentColor
 	g.listWidget.BorderStyle.Fg = AccentColor
 	if g.Genres == nil {
 		return errors.New("Missing Genres array")
@@ -67,9 +68,15 @@ func (g *GenresUI) newGridWidget() error {
 	g.gridWidget = ui.NewGrid()
 	termWidth, termHeight := ui.TerminalDimensions()
 	g.gridWidget.SetRect(0, 0, termWidth, termHeight-1)
+	placeholder := ui.NewBlock()
+	placeholder.BorderBottom = false
+	placeholder.BorderLeft = false
+	placeholder.BorderStyle.Fg = AccentColor
 	g.gridWidget.Set(
 		ui.NewRow(1.0,
 			ui.NewCol(1.0/2, g.listWidget),
-			ui.NewCol(1.0/2, audioPlayerWidget.MainUI())))
+			ui.NewCol(1.0/2,
+				ui.NewRow(6.0/8, placeholder),
+				ui.NewRow(2.0/8, audioPlayerWidget.MainUI()))))
 	return nil
 }

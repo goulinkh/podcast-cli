@@ -90,6 +90,8 @@ func newHelpBarWidget() *widgets.Paragraph {
 		"[Esc ](fg:black)[Back](fg:black,bg:green) " +
 		"[Right ](fg:black)[+10s](fg:black,bg:green) " +
 		"[Left ](fg:black)[-10s](fg:black,bg:green) " +
+		"[ d ](fg:black)[Speeddown](fg:black,bg:green)" +
+		"[ u ](fg:black)[Speedup](fg:black,bg:green)" +
 		"[ q ](fg:black)[Exit](fg:black,bg:green)"
 	helpBarWidget.Border = false
 	helpBarWidget.WrapText = true

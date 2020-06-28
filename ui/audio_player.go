@@ -16,6 +16,7 @@ type AudioPlayerWidget struct {
 	audioPositionWidget *widgets.Gauge
 	playerStatusWidget  *widgets.Paragraph
 	grid                *ui.Grid
+	playSpeed           float32
 }
 
 func (ap *AudioPlayerWidget) InitComponents() {
@@ -28,6 +29,7 @@ func (ap *AudioPlayerWidget) InitComponents() {
 func (ap *AudioPlayerWidget) MainUI() *ui.Grid {
 	return ap.grid
 }
+
 func (ap *AudioPlayerWidget) HandleEvent(e *ui.Event) (Command, error) {
 	switch e.ID {
 	case "p", "<Space>":
@@ -48,6 +50,15 @@ func (ap *AudioPlayerWidget) HandleEvent(e *ui.Event) (Command, error) {
 				audioplayer.Seek(position)
 			}
 		}
+	case "]":
+		if audioplayer.MainCtrl != nil && ap.nowPlaying != nil {
+			audioplayer.IncreaseSpeed()
+		}
+	case "[":
+		if audioplayer.MainCtrl != nil && ap.nowPlaying != nil {
+			audioplayer.DecreaseSpeed()
+		}
+
 	}
 	return Nothing, nil
 }
@@ -116,7 +127,9 @@ func (ap *AudioPlayerWidget) initGrid() {
 	ap.grid = ui.NewGrid()
 	ap.grid.Border = false
 	ap.grid.Set(
-		ui.NewRow(1.0/2, ap.playerStatusWidget),
-		ui.NewRow(1.0/2, ap.audioPositionWidget),
+		ui.NewRow(1.0,
+			ui.NewRow(1.0/2, ap.playerStatusWidget),
+			ui.NewRow(1.0/2, ap.audioPositionWidget),
+		),
 	)
 }

@@ -63,15 +63,16 @@ func (p *PodcastsUI) initGridWidget() error {
 		ui.NewRow(1.0,
 			ui.NewCol(1.0/2, p.listWidget),
 			ui.NewCol(1.0/2,
-				ui.NewRow(5.0/7, p.detailsWidget),
-				ui.NewRow(2.0/7, audioPlayerWidget.MainUI()))))
+				ui.NewRow(6.0/8, p.detailsWidget),
+				ui.NewRow(2.0/8, audioPlayerWidget.MainUI()))))
 	return nil
 }
 func (p *PodcastsUI) initListWidget() {
 	p.listWidget = widgets.NewList()
 	p.listWidget.Title = "Podcasts List"
 	p.listWidget.TextStyle.Fg = FgColor
-	p.listWidget.SelectedRowStyle.Fg = AccentColor
+	p.listWidget.SelectedRowStyle.Fg = ui.ColorBlack
+	p.listWidget.SelectedRowStyle.Bg = AccentColor
 	p.listWidget.BorderStyle.Fg = AccentColor
 	p.listWidget.Rows = make([]string, len(p.Podcasts))
 	for i, podcast := range p.Podcasts {
