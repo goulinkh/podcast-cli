@@ -57,8 +57,8 @@ func (e *EpisodesUI) initGridWidget() error {
 		ui.NewRow(1.0,
 			ui.NewCol(1.0/2, e.listWidget),
 			ui.NewCol(1.0/2,
-				ui.NewRow(5.0/7, e.detailsWidget),
-				ui.NewRow(2.0/7, audioPlayerWidget.MainUI()))))
+				ui.NewRow(6.0/8, e.detailsWidget),
+				ui.NewRow(2.0/8, audioPlayerWidget.MainUI()))))
 	return nil
 }
 
@@ -67,7 +67,8 @@ func (e *EpisodesUI) initListWidget() {
 	e.listWidget.Title = "Episodes"
 	e.listWidget.SelectedRowStyle.Modifier = ui.ModifierClear
 	e.listWidget.TextStyle.Fg = FgColor
-	e.listWidget.SelectedRowStyle.Fg = AccentColor
+	e.listWidget.SelectedRowStyle.Fg = ui.ColorBlack
+	e.listWidget.SelectedRowStyle.Bg = AccentColor
 	e.listWidget.BorderStyle.Fg = AccentColor
 	e.listWidget.Rows = make([]string, len(e.Episodes))
 	for i, episode := range e.Episodes {

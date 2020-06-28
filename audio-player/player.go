@@ -26,8 +26,10 @@ type AudioPlayer struct {
 }
 
 var (
-	MainCtrl *beep.Ctrl
-	Volume   *effects.Volume
+	MainCtrl  *beep.Ctrl
+	Volume    *effects.Volume
+	resampler *beep.Resampler
+
 	Streamer beep.StreamSeekCloser
 	Format   beep.Format
 )
@@ -92,9 +94,11 @@ func PlaySound(e *itunesapi.Episode) error {
 	sr := Format.SampleRate * 2
 	speaker.Init(sr, sr.N(time.Millisecond*500))
 
-	Volume.Streamer = beep.Resample(4, Format.SampleRate, sr, Streamer)
-	MainCtrl = &beep.Ctrl{Streamer: Volume}
-	speaker.Play(MainCtrl)
+	streamer := beep.Resample(4, Format.SampleRate, sr, Streamer)
+	MainCtrl = &beep.Ctrl{Streamer: streamer}
+	resampler = beep.ResampleRatio(4, 1, MainCtrl)
+	Volume = &effects.Volume{Streamer: resampler, Base: 2}
+	speaker.Play(Volume)
 	e.DurationInMilliseconds = int(float32(Streamer.Len())/float32(Format.SampleRate)) * 1000
 	return nil
 }
@@ -102,6 +106,26 @@ func PlaySound(e *itunesapi.Episode) error {
 func PauseSong(state bool) {
 	speaker.Lock()
 	MainCtrl.Paused = state
+	speaker.Unlock()
+}
+
+func IncreaseSpeed() {
+	speed := resampler.Ratio() * 1.100000e+000
+	if speed >= 1.800000e+000 {
+		return
+	}
+	speaker.Lock()
+	resampler.SetRatio(speed)
+	speaker.Unlock()
+}
+
+func DecreaseSpeed() {
+	speed := resampler.Ratio() * 0.900000e+000
+	if speed <= 1.000000e+000 {
+		return
+	}
+	speaker.Lock()
+	resampler.SetRatio(speed)
 	speaker.Unlock()
 }
 
@@ -116,6 +140,10 @@ func Seek(pos int) error {
 }
 
 func SetVolume(percent int) {
+	if percent > 100 {
+		return
+	}
+
 	if percent == 0 {
 		Volume.Silent = true
 	} else {
