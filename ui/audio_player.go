@@ -11,7 +11,9 @@ import (
 )
 
 type AudioPlayerWidget struct {
+	playlist            []*itunesapi.Episode
 	nowPlaying          *itunesapi.Episode
+	nowPlayingIndex     int
 	paused              bool
 	audioPositionWidget *widgets.Gauge
 	playerStatusWidget  *widgets.Paragraph
@@ -63,44 +65,52 @@ func (ap *AudioPlayerWidget) HandleEvent(e *ui.Event) (Command, error) {
 	return Nothing, nil
 }
 
-func (ap *AudioPlayerWidget) Play(e *itunesapi.Episode) {
-	if ap.nowPlaying != nil && ap.nowPlaying.Id == e.Id {
+func (ap *AudioPlayerWidget) Play(playlist []*itunesapi.Episode, index int) {
+	e := playlist[index]
+	if e == nil || (ap.nowPlaying != nil && ap.nowPlaying.Id == e.Id) {
 		return
-	}
-	if ap.nowPlaying == nil {
-		go func() {
-			for {
-				select {
-				case <-time.After(time.Millisecond * 100):
-					if ap.paused {
-						ap.audioPositionWidget.Title = "Paused"
-					} else {
-						ap.playerStatusWidget.Text = ap.nowPlaying.Title
-						position := audioplayer.Position()
-						ap.audioPositionWidget.Title = "Running"
-						ap.audioPositionWidget.Label = fmt.Sprintf("%d:%d", position/60, position%60)
-						audioDuration := e.DurationInMilliseconds / 1000
-						if audioDuration > 0 {
-							ap.audioPositionWidget.Percent = (position * 100) / audioDuration
-						}
-					}
-					RefreshUI()
-				}
-			}
-		}()
 	}
 	ap.playerStatusWidget.Title = "Downloading audio ..."
 	RefreshUI()
 	go func() {
-		if err := audioplayer.PlaySound(e); err != nil {
-			ap.playerStatusWidget.Title = "Failed to play audio"
-			RefreshUI()
-		}
 		ap.nowPlaying = e
+		ap.playlist = playlist
+		ap.nowPlayingIndex = index
 		ap.paused = false
 		ap.playerStatusWidget.Title = "Now Playing"
+		ap.playAudio(ap.nowPlaying)
+		for {
+			select {
+			case <-time.After(time.Millisecond * 100):
+				if ap.paused {
+					ap.audioPositionWidget.Title = "Paused"
+				} else {
+					ap.playerStatusWidget.Text = ap.nowPlaying.Title
+					position := audioplayer.Position()
+					ap.audioPositionWidget.Title = "Running"
+					ap.audioPositionWidget.Label = fmt.Sprintf("%d:%d", position/60, position%60)
+					audioDuration := e.DurationInMilliseconds / 1000
+					if audioDuration > 0 {
+						ap.audioPositionWidget.Percent = (position * 100) / audioDuration
+					}
+					if ap.audioPositionWidget.Percent == 100 {
+						audioplayer.Streamer.Close()
+						ap.Play(playlist, index+1)
+						return
+					}
+				}
+				RefreshUI()
+			}
+		}
 	}()
 	return
+}
+
+func (ap *AudioPlayerWidget) playAudio(e *itunesapi.Episode) {
+	if err := audioplayer.PlaySound(e); err != nil {
+		ap.playerStatusWidget.Title = "Failed to play audio"
+		RefreshUI()
+	}
 }
 
 func (ap *AudioPlayerWidget) Pause() {

@@ -38,7 +38,7 @@ func (e *EpisodesUI) HandleEvent(event *ui.Event) (Command, error) {
 		e.updateDetailsWidget()
 
 	case "<Enter>":
-		audioPlayerWidget.Play(e.Episodes[e.listWidget.SelectedRow])
+		audioPlayerWidget.Play(e.Episodes, e.listWidget.SelectedRow)
 	}
 	return Nothing, nil
 }
