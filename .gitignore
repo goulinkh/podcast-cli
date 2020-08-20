@@ -6,8 +6,9 @@
 *.dylib
 
 # binary
-podcast-cli
-main
+podcast-cli*
+main*
+!main.go
 
 # Test binary, built with `go test -c`
 *.test
