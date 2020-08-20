@@ -42,7 +42,10 @@ func (e *EpisodesUI) HandleEvent(event *ui.Event) (Command, error) {
 	}
 	return Nothing, nil
 }
+func (e *EpisodesUI) Play(index int) {
+	audioPlayerWidget.Play(e.Episodes, index)
 
+}
 func (e *EpisodesUI) initGridWidget() error {
 	if e.listWidget == nil {
 		return errors.New("List widget is not initialized")
