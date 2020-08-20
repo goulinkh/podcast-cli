@@ -94,7 +94,6 @@ func (ap *AudioPlayerWidget) Play(playlist []*itunesapi.Episode, index int) {
 						ap.audioPositionWidget.Percent = (position * 100) / audioDuration
 					}
 					if ap.audioPositionWidget.Percent == 100 {
-						audioplayer.Streamer.Close()
 						ap.Play(playlist, index+1)
 						return
 					}
