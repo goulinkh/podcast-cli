@@ -128,7 +128,7 @@ func getAuthorization() (string, error) {
 	if authorization != "" {
 		return authorization, nil
 	}
-	authRegEx := regexp.MustCompile("22privateKeyPath%22%3A%22ssl%2Fwebplayer.p8%22%2C%22token%22%3A%22(?P<Bearer>.+)%22%7D%2C%22routerScroll")
+	authRegEx := regexp.MustCompile("privateKeyPath.+token%22%3A%22(?P<Bearer>.*?)%22%7D%2C%22")
 	resp, err := http.Get("https://podcasts.apple.com/us/podcast/the-joe-rogan-experience/id360084272")
 	if err != nil {
 		return "", err
